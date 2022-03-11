@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">Assignment__12</string>
+    <string name="AsyncTaskLoader">AsyncTaskLoader</string>
+    <string name="CursorLoader">CursorLoader</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="load">Load Image</string>
+    <string name="loading_image">Loading image</string>
+    <string name="title">Loading</string>
+    <string name="message">Please wait…</string>
+    <string name="alert_title">Permissions required</string>
+    <string name="alert_message">Storage and contacts access permissions required , Please allow access to move further</string>
+    <string name="ok">OK</string>
+    <string name="denied_permissions">Please enable permissions form settings</string>
+    <string name="loader_finished">Loader finished</string>
+    <string name="loader_created">Loader created</string>
+    <string name="video_icon">Video icon</string>
+    <string name="toast_contact">Go to SETTINGS to enable contacts permission</string>
+    <string name="please_enable_storage_permission">Please enable storage permission</string>
+    <string name="please_enable_internet_access">Please enable internet access</string>
+</resources>

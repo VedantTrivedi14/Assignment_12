@@ -1,0 +1,129 @@
+package com.tatvasoftassignment.assignment__12.fragment;
+
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
+import android.content.Loader;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+
+import com.tatvasoftassignment.assignment__12.R;
+import com.tatvasoftassignment.assignment__12.databinding.FragmentCursorLoaderBinding;
+
+import java.util.ArrayList;
+
+
+public class CursorLoaderFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    FragmentCursorLoaderBinding binding;
+    private Uri videoUri;
+    private static final int REQ_CODE = 99;
+    private ArrayList<String> videoList;
+    LoaderManager loaderManager;
+
+    public CursorLoaderFragment() {
+
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        loaderManager = requireActivity().getLoaderManager();
+
+    }
+
+    void loadLoader() {
+        if (loaderManager.getLoader(1) == null) {
+            loaderManager.initLoader(1, null, this);
+        } else {
+            loaderManager.restartLoader(1, null, this);
+        }
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        binding = FragmentCursorLoaderBinding.inflate(inflater, container, false);
+        videoList = new ArrayList<>();
+        checkPermission();
+        return binding.getRoot();
+    }
+
+    private void checkPermission() {
+        if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQ_CODE);
+        } else {
+            loadLoader();
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQ_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                loaderManager.initLoader(1, null, this);
+            } else if (shouldShowRequestPermissionRationale(permissions[0])) {
+                showDialogOK(getString(R.string.alert_title),
+                        getString(R.string.alert_message),
+                        (dialog, which) -> {
+                            if (which == DialogInterface.BUTTON_POSITIVE) {
+                                checkPermission();
+                            }
+                        });
+            } else {
+                binding.txtCursorDummyText.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    private void showDialogOK(String title, String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton(R.string.ok, okListener)
+                .create()
+                .show();
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        videoUri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+        return new CursorLoader(requireContext(), videoUri, null, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        data = requireContext().getContentResolver().query(videoUri, null, null, null, null);
+        if (data != null) {
+            while (data.moveToNext()) {
+                @SuppressLint("Range")
+                String video = data.getString(data.getColumnIndex(MediaStore.Video.Media.TITLE));
+                videoList.add(video);
+            }
+            data.close();
+        }
+        binding.lstVideo.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, videoList));
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+
+}
