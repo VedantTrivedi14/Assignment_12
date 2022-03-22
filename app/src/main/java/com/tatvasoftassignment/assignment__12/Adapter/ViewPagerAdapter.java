@@ -1,42 +1,31 @@
 package com.tatvasoftassignment.assignment__12.Adapter;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentActivity;
+import androidx.viewpager2.adapter.FragmentStateAdapter;
 
-import java.util.ArrayList;
+import com.tatvasoftassignment.assignment__12.fragment.AsyncTaskLoaderFragment;
+import com.tatvasoftassignment.assignment__12.fragment.CursorLoaderFragment;
 
-public class ViewPagerAdapter extends FragmentPagerAdapter {
+public class ViewPagerAdapter extends FragmentStateAdapter {
 
-    private final ArrayList<Fragment> fragmentList = new ArrayList<>();
-    private final ArrayList<String> titleList = new ArrayList<>();
 
-    public ViewPagerAdapter(@NonNull FragmentManager fm, int behavior) {
-        super(fm, behavior);
+    public ViewPagerAdapter(@NonNull FragmentActivity fragmentActivity) {
+        super(fragmentActivity);
     }
 
     @NonNull
     @Override
-    public Fragment getItem(int position) {
-        return fragmentList.get(position);
+    public Fragment createFragment(int position) {
+        if (position == 0) {
+            return new CursorLoaderFragment();
+        }
+        return new AsyncTaskLoaderFragment();
     }
 
     @Override
-    public int getCount() {
-        return fragmentList.size();
-    }
-
-    public void addFragment(@NonNull Fragment fragment, String title) {
-        fragmentList.add(fragment);
-        titleList.add(title);
-    }
-
-    @Nullable
-    @Override
-    public CharSequence getPageTitle(int position) {
-        return titleList.get(position);
+    public int getItemCount() {
+        return 2;
     }
 }
-

@@ -3,13 +3,11 @@ package com.tatvasoftassignment.assignment__12.Activity;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentPagerAdapter;
 
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.tatvasoftassignment.assignment__12.Adapter.ViewPagerAdapter;
 import com.tatvasoftassignment.assignment__12.R;
 import com.tatvasoftassignment.assignment__12.databinding.ActivityMainBinding;
-import com.tatvasoftassignment.assignment__12.fragment.AsyncTaskLoaderFragment;
-import com.tatvasoftassignment.assignment__12.fragment.CursorLoaderFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,12 +20,20 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        binding.tabLayout.setupWithViewPager(binding.viewPager);
-        ViewPagerAdapter viewPager = new ViewPagerAdapter(getSupportFragmentManager(), FragmentPagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-        viewPager.addFragment(new AsyncTaskLoaderFragment(), getString(R.string.AsyncTaskLoader));
-        viewPager.addFragment(new CursorLoaderFragment(), getString(R.string.CursorLoader));
-        binding.viewPager.setAdapter(viewPager);
+        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
+        ViewPagerAdapter adapter = new ViewPagerAdapter(this);
+        binding.viewPager.setAdapter(adapter);
+
+        new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
+
+            if (position == 0) {
+                tab.setText(getString(R.string.CursorLoader));
+            } else if (position == 1) {
+                tab.setText(getString(R.string.AsyncTaskLoader));
+            }
+        }).attach();
 
     }
 
