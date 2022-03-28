@@ -3,24 +3,30 @@ package com.tatvasoftassignment.assignment__12.fragment;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.LoaderManager;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
+import com.tatvasoftassignment.assignment__12.BuildConfig;
 import com.tatvasoftassignment.assignment__12.R;
 import com.tatvasoftassignment.assignment__12.databinding.FragmentCursorLoaderBinding;
 
@@ -34,9 +40,9 @@ public class CursorLoaderFragment extends Fragment implements LoaderManager.Load
     private static final int REQ_CODE = 99;
     private ArrayList<String> videoList;
     LoaderManager loaderManager;
-
-    public CursorLoaderFragment() {
-
+    Context context;
+    public CursorLoaderFragment(Context context) {
+        this.context = context;
     }
 
     @Override
@@ -59,8 +65,14 @@ public class CursorLoaderFragment extends Fragment implements LoaderManager.Load
                              Bundle savedInstanceState) {
         binding = FragmentCursorLoaderBinding.inflate(inflater, container, false);
         videoList = new ArrayList<>();
-        checkPermission();
+//        checkPermission();
         return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        checkPermission();
     }
 
     private void checkPermission() {
@@ -86,6 +98,11 @@ public class CursorLoaderFragment extends Fragment implements LoaderManager.Load
                             }
                         });
             } else {
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+                intent.setData(uri);
+                context.startActivity(intent);
+                Toast.makeText(context, R.string.permission_toast, Toast.LENGTH_SHORT).show();
                 binding.txtCursorDummyText.setVisibility(View.VISIBLE);
             }
         }
@@ -124,6 +141,4 @@ public class CursorLoaderFragment extends Fragment implements LoaderManager.Load
     public void onLoaderReset(Loader<Cursor> loader) {
 
     }
-
-
 }

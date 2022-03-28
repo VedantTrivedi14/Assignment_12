@@ -9,7 +9,7 @@
     <string name="title">Loading</string>
     <string name="message">Please wait…</string>
     <string name="alert_title">Permissions required</string>
-    <string name="alert_message">Storage and contacts access permissions required , Please allow access to move further</string>
+    <string name="alert_message">Storage permission required to access video from device</string>
     <string name="ok">OK</string>
     <string name="denied_permissions">Please enable permissions form settings</string>
     <string name="loader_finished">Loader finished</string>
@@ -18,4 +18,5 @@
     <string name="toast_contact">Go to SETTINGS to enable contacts permission</string>
     <string name="please_enable_storage_permission">Please enable storage permission</string>
     <string name="please_enable_internet_access">Please enable internet access</string>
+    <string name="permission_toast">Enable files and media permission and restart application</string>
 </resources>

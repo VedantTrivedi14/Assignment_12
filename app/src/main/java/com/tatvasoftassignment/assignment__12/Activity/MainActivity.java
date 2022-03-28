@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        ViewPagerAdapter adapter = new ViewPagerAdapter(this);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(this,this);
         binding.viewPager.setAdapter(adapter);
 
         new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> {
