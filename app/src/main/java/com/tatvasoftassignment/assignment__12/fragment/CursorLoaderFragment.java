@@ -2,11 +2,14 @@ package com.tatvasoftassignment.assignment__12.fragment;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+
 import android.app.LoaderManager;
 import android.content.Context;
+
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
+
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -20,8 +23,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
@@ -32,12 +37,10 @@ import com.tatvasoftassignment.assignment__12.databinding.FragmentCursorLoaderBi
 
 import java.util.ArrayList;
 
-
 public class CursorLoaderFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     FragmentCursorLoaderBinding binding;
     private Uri videoUri;
-    private static final int REQ_CODE = 99;
     private ArrayList<String> videoList;
     LoaderManager loaderManager;
     Context context;
@@ -65,48 +68,48 @@ public class CursorLoaderFragment extends Fragment implements LoaderManager.Load
                              Bundle savedInstanceState) {
         binding = FragmentCursorLoaderBinding.inflate(inflater, container, false);
         videoList = new ArrayList<>();
-//        checkPermission();
+        checkPermission();
         return binding.getRoot();
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        checkPermission();
-    }
+
 
     private void checkPermission() {
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, REQ_CODE);
+            mPermissionResult.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
         } else {
             loadLoader();
         }
     }
+     ActivityResultLauncher<String> mPermissionResult = registerForActivityResult(
+            new ActivityResultContracts.RequestPermission(),
+            new ActivityResultCallback<Boolean>() {
 
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQ_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                loaderManager.initLoader(1, null, this);
-            } else if (shouldShowRequestPermissionRationale(permissions[0])) {
-                showDialogOK(getString(R.string.alert_title),
-                        getString(R.string.alert_message),
-                        (dialog, which) -> {
-                            if (which == DialogInterface.BUTTON_POSITIVE) {
-                                checkPermission();
+                @Override
+                public void onActivityResult(Boolean result) {
+                        if(result){
+                            loadLoader();
+                        }else{
+                            if(shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)){
+                                showDialogOK(getString(R.string.alert_title),
+                                        getString(R.string.alert_message),
+                                        (dialog, which) -> {
+                                            if (which == DialogInterface.BUTTON_POSITIVE) {
+                                                checkPermission();
+                                            }
+                                        });
+                            }else{
+                                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                                Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
+                                intent.setData(uri);
+                                context.startActivity(intent);
+                                Toast.makeText(context, R.string.permission_toast, Toast.LENGTH_SHORT).show();
+                                binding.txtCursorDummyText.setVisibility(View.VISIBLE);
                             }
-                        });
-            } else {
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", BuildConfig.APPLICATION_ID, null);
-                intent.setData(uri);
-                context.startActivity(intent);
-                Toast.makeText(context, R.string.permission_toast, Toast.LENGTH_SHORT).show();
-                binding.txtCursorDummyText.setVisibility(View.VISIBLE);
-            }
-        }
-    }
+                        }
+                }
+            });
+
 
     private void showDialogOK(String title, String message, DialogInterface.OnClickListener okListener) {
         new AlertDialog.Builder(requireContext())
@@ -116,6 +119,7 @@ public class CursorLoaderFragment extends Fragment implements LoaderManager.Load
                 .create()
                 .show();
     }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {

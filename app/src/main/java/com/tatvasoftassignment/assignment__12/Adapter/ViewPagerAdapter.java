@@ -1,6 +1,5 @@
 package com.tatvasoftassignment.assignment__12.Adapter;
 
-import static java.security.AccessController.getContext;
 
 import android.content.Context;
 
